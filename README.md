@@ -1,2 +1,2 @@
 # algorithm-training
-daily training
+daily training?
