@@ -98,5 +98,19 @@ int main() {
 
 /**
   Binary search
-
+  WA many times.
+  1. vst flag is supposed to check the circular dependency, so we need to reset it before return.
+  2. mistakes in estimating the upper bound.
+        1e9 * lg 100.
+  3. not modify code (int -> long long) thoroughly.
+    We need to consider the following,
+        1), every function declaration,
+            okay(ll x, ...)
+            canGetMetal(int , ll mg,..)
+        2), every variable passed in function from 1),
+            mid at Line #74
+            need at Line #44
+        3), every variable / expression used to calculate the variable from 2).
+            l, r at Line #74
+            100 * 1e9 + 1 at Line #72
 */
