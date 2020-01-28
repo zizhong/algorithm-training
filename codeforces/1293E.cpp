@@ -1,3 +1,13 @@
+/*
+1293E
+
+https://codeforces.com/contest/1293/problem/E
+
+1. first think of a chain, then think of a tree
+2. O(N^3) DP works like, enumerate the edge assigned with 0, and dp[u][v] is the max value. A key optimization is to pre calculate the info for each dfs with different root. And then `dp[u][v] = child_with_root[u][v] * child_with_root[v][u] + max(dp[u][father_with_root[u][r]] + dp[v][father_with_root[v][u]])`. 
+3. the range of ans is 3000 * 3000 * 3000 = 27 * 1e9, which can cause integer overflows.
+*/
+
 #include <vector>
 #include <cstdio>
 #include <cstring>
@@ -113,3 +123,4 @@ int main() {
     solve(++ncase);
   }
 }
+
