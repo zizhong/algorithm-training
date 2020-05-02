@@ -4,7 +4,24 @@
 * 2) for [1...n] % mod
 * 2. C(n, m) % p
 * 3. Striling number of the second kind.
+* 4. inv_fact[n] = inv_fact[n+1] * (n + 1);  (from 217ms->77ms)
 */
+
+/* 1.
+ * calculate inv[1...N]
+ * if t = mod / i, k = mod % i;
+ * => mod = t * i + k
+ * => -t * i = k (% mod)
+ * => -t * inv[k] = inv[i] (% mod)
+ * => inv[i] = (mod - mod / i) * inv[mod % i] (% mod)
+ *
+ * 2. calculate inv(x) % p
+ * x ^ p = p (% p)
+ * x ^ (p - 1) = 1 (% p)
+ * x * (x ^(p-2)) = 1 (% p)
+ * inv[x] = (x ^(p - 2)) (%p)
+ */
+
 
 #include <vector>
 #include <cstdio>
@@ -73,7 +90,7 @@ struct PairHash {
 
 const int N = 2 * (1e5) + 10;
 int fact[N];
-
+int inv_fact[N];
 int power_n[N];
 
 int power_mod(int a, int x) {
@@ -92,7 +109,7 @@ int inv(int a) {
 }
 
 ll C(int n, int m) {
-  return fact[n] * 1LL * inv(fact[n - m]) % mod * inv(fact[m]) % mod;
+  return fact[n] * 1LL * inv_fact[n - m] % mod * inv_fact[m] % mod;
 }
 
 ll Strling(int n, int k) {
@@ -124,7 +141,11 @@ void solve(int ncase) {
   for (int i = 1; i <= n; i++) {
     fact[i] = fact[i - 1] * 1LL * i % mod;
   }
-  ll ans = (k == 0 ? 1LL : 2LL) * Strling(n, n - k) % mod * fact[n] % mod * inv(fact[k]) % mod;
+  inv_fact[n] = inv(fact[n]);
+  for (int i = n - 1; i >= 0; i--) {
+    inv_fact[i] = inv_fact[i + 1] * 1LL * (i + 1) % mod;
+  }
+  int ans = (k == 0 ? 1LL : 2LL) * Strling(n, n - k) % mod * fact[n] % mod * inv_fact[k] % mod;
   cout << ans << endl;
 }
 
