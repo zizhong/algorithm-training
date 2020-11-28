@@ -1,6 +1,12 @@
 /**
 * An O(n) algorithm to solve the min number of swaps to convert a string to a palindrome.
 * The idea is from (link)[https://codeforces.com/blog/entry/2509].
+*
+* define d(P, Q) for two strings P and Q the minimum number of swaps needed to obtain Q from P. 
+*   Prove the triangle inequality for function d(P, Q). 
+*   I mean prove that for any three string P, Q and R we have d(P, R) + d(R, Q) >= d(P, Q).
+*   Let Y' be the reverse of Y. Suppose we have found Z with minimum number of swaps necessary to make the string a palindrome. 
+*   We know that d(X, Z) + d(Z, Y') >= d(X, Y'). This means that we need at least d(X, Y') swaps. So it's sufficient to build a palindrome with d(X, Y`) swaps. 
 */
 
 #include <vector>
@@ -162,67 +168,6 @@ struct ModInt {
 };
 const int mod = (1e9) + 7;
 typedef ModInt<mod> mod_int;
-
-struct SegTree {
-  vector<int> v;
-  SegTree(int n) {
-    v.assign(n * 4 + 10, 0);
-    build(1, 1, n);
-  }
-  void build(int idx, int l, int r) {
-    if (l == r) {
-      v[idx] = 1;
-      return;
-    }
-    int m = (l + r) / 2;
-    build(lc(idx), l, m);
-    build(rc(idx), m + 1, r);
-    push_up(idx);
-  }
-  inline int lc(int idx) { return 2 * idx; }
-  inline int rc(int idx) { return 2 * idx + 1; }
-  void update(int idx, int l, int r, int x, int delta) {
-    if (x < l || x > r) return;
-    if (l == r) {
-      v[idx] += delta;
-      return;
-    }
-    int m = (l + r) / 2;
-    update(lc(idx), l, m, x, delta);
-    update(rc(idx), m + 1, r, x, delta);
-    push_up(idx);
-  }
-  auto query(int idx, int l, int r, int L, int R) -> int {
-    if (R < l || r < L) return 0;
-    if (L <= l && r <= R) return v[idx];
-    int m = (l + r) / 2;
-    return query(lc(idx), l, m, L, R) +
-        query(rc(idx), m + 1, r, L, R);
-  }
-  void push_up(int idx) {
-    v[idx] = v[lc(idx)] + v[rc(idx)];
-  }
-};
-int len;
-int calc_picked_cost(const vector<vector<int>> &pos,
-                     const vector<int> &picked,
-                     int idx,
-                     SegTree &seg_tree) {
-  int pick_a = pos[idx][picked[idx]];
-  int pick_b = pos[idx][pos[idx].size() - 1 - picked[idx]];
-  return seg_tree.query(1, 1, len, 1, pick_a) +
-      seg_tree.query(1, 1, len, pick_b + 2, len);
-}
-void pick_it(const vector<vector<int>> &pos,
-             vector<int> &picked,
-             int idx,
-             SegTree &seg_tree) {
-  int pick_a = pos[idx][picked[idx]];
-  int pick_b = pos[idx][pos[idx].size() - 1 - picked[idx]];
-  seg_tree.update(1, 1, len, pick_a + 1, -1);
-  seg_tree.update(1, 1, len, pick_b + 1, -1);
-  picked[idx]++;
-}
 
 const int NC = 26;
 
