@@ -29,7 +29,7 @@ struct Trie {
     root = alloc();
   }
   TrieNode *alloc() {
-    node[node_idx].clear();
+    node[node_idx].init();
     return &node[node_idx++];
   }
 
