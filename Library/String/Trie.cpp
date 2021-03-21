@@ -38,7 +38,7 @@ struct Trie {
     for (char c : str) {
       auto &nextp = p->getNext(c);
       if (nullptr == nextp) {
-        nextp = new TrieNode();
+        nextp = alloc();
       }
       p = nextp;
     }
