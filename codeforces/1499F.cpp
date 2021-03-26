@@ -1,6 +1,15 @@
 /*
 * Tree DP.
-* For each edge, the merge operation can be O(N), and therefore the time complexity is O(N^2) 
+*
+* Consider the even worse option: not the height but the size of the subtree. 
+* It's easy to see that the size is always greater or equal than the height.
+* Interpret the merge the following way: enumerate the vertices inside all the subtrees of the processed children and the vertices inside the subtree of the new child.
+* 
+* Iterating up to the size of the subtree is the same number of moves as going over the vertices in it.
+* The merge will go over all the pairs of vertices such that the first vertex of the pair is in the first set and the second vertex is in the second set.
+* Thus, each pair of vertices of the tree will be processed exactly once (in lca of these vertices). There are O(n2) such pairs, thus, such dp's work in O(n2).
+* 
+* Therefore, the process is O(N^2).
 */
 
 #include <vector>
