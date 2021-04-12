@@ -1,64 +1,79 @@
-#include "bits/stdc++.h"
-using namespace std;
-struct edge {int to, cap, rev;};
+typedef int F;
+#define REP(i, n) for((i)=0;(i)<(int)(n);(i)++)
+const F F_INF = (1 << 29);
+const int MAXV = 4 * 10000 + 10;
+const int MAXE = MAXV * 10 * 2; // E*2!
 
-const int INF = 0x3fffffff;
-const int MAXV = 50000 * 2 + 10;
-vector<edge> G[MAXV];
-int level[MAXV];
-int iter[MAXV];
+F cap[MAXE], flow[MAXE];
+int to[MAXE], _prev[MAXE], last[MAXV], used[MAXV], level[MAXV];
 
-void add_edge(int from, int to, int cap) {
-    //cout << from << "->" << to << ": " << cap << endl;
-    G[from].push_back(edge{to, cap, (int)G[to].size()});
-    G[to].push_back(edge{from, 0, (int)G[from].size() - 1});
-}
+struct MaxFlow {
+  int V, E;
 
-void bfs(int s) {
-    memset(level, -1, sizeof(level));
-    queue<int> que;
+  MaxFlow(int n) {
+    int i;
+    V = n;
+    E = 0;
+    REP(i, V)last[i] = -1;
+  }
+
+  void add_edge(int x, int y, F f) {
+    cap[E] = f;
+    flow[E] = 0;
+    to[E] = y;
+    _prev[E] = last[x];
+    last[x] = E;
+    E++;
+    cap[E] = 0;
+    flow[E] = 0;
+    to[E] = x;
+    _prev[E] = last[y];
+    last[y] = E;
+    E++;
+  }
+
+  bool bfs(int s, int t) {
+    int i;
+    REP(i, V)level[i] = -1;
+    queue<int> q;
+    q.push(s);
     level[s] = 0;
-    que.push(s);
-    while(que.size()) {
-        int v = que.front();
-        que.pop();
-        for(auto &e: G[v]) {
-            if (e.cap > 0 && level[e.to] < 0) {
-                level[e.to] = level[v] + 1;
-                que.push(e.to);
-            }
+    while (!q.empty()) {
+      int x = q.front();
+      q.pop();
+      for (i = last[x]; i >= 0; i = _prev[i])
+        if (level[to[i]] == -1 && cap[i] > flow[i]) {
+          q.push(to[i]);
+          level[to[i]] = level[x] + 1;
         }
     }
-}
+    return (level[t] != -1);
+  }
 
-int dfs(int v, int t, int f) {
+  F dfs(int v, int t, F f) {
+    int i;
     if (v == t) return f;
-    for(int &i = iter[v]; i < G[v].size(); i++) {
-        edge &e = G[v][i];
-        if (e.cap > 0 && level[v] < level[e.to]) {
-            int d = dfs(e.to, t, min(f, e.cap));
-            if (d > 0) {
-                e.cap -= d;
-                G[e.to][e.rev].cap += d;
-                return d;
-            }
+    for (i = used[v]; i >= 0; used[v] = i = _prev[i])
+      if (level[to[i]] > level[v] && cap[i] > flow[i]) {
+        F tmp = dfs(to[i], t, min(f, cap[i] - flow[i]));
+        if (tmp > 0) {
+          flow[i] += tmp;
+          flow[i ^ 1] -= tmp;
+          return tmp;
         }
-    }
+      }
     return 0;
-}
+  }
 
-int max_flow(int s, int t) {
-    int flow = 0;
-    for(;;) {
-        bfs(s);
-        if (level[t] < 0) return flow;
-        memset(iter, 0, sizeof(iter));
-        int f;
-        while((f = dfs(s, t, INF)) > 0) flow += f;
+  F maxflow(int s, int t) {
+    int i;
+    while (bfs(s, t)) {
+      REP(i, V)used[i] = last[i];
+      while (dfs(s, t, F_INF) != 0);
     }
-}
+    F ans = 0;
+    for (i = last[s]; i >= 0; i = _prev[i]) ans += flow[i];
+    return ans;
+  }
 
-void init() {
-    for(auto &v : G) v.clear();      
-    memset(level, 0, sizeof(level));
-}
+};
