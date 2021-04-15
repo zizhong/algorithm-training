@@ -9,6 +9,9 @@ CONVERSION to narrow down the scope of a variable.
 This reminds me the questions https://leetcode-cn.com/problems/Up5XYM/. The arrangement of using K 1*3 can be converted from an arrangment of using K-3 1*3.
 The conversion is a common trick to narrow down the range of the related variable. 
 
+Update #1, these two problems are the same type of stacking problems, where we can stack different elements to fill in a large scope.
+  The order of the elements doesnt matter. The coversation can happen if we can concern using the smallest element replacing the bigger element.
+
 Raising the variable.
 
 Get the correct variable is the half of the success. In this case, the offset is one of the key variables.
