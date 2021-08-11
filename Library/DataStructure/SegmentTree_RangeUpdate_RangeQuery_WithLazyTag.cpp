@@ -9,6 +9,12 @@ struct SegTree {
   }
   inline int lc(int idx) { return 2 * idx; }
   inline int rc(int idx) { return 2 * idx + 1; }
+  
+  void update_node(int idx, int delta) {
+      lazy[idx] += delta;
+      v[idx] += delta;
+  }
+  
   void update_max(int idx, int l, int r, int x, int nv) {
     if (r < x || x < l) return;
     if (l == r) {
@@ -24,8 +30,7 @@ struct SegTree {
   void update(int idx, int l, int r, int L, int R, int delta) {
     if (R < l || r < L || R < L) return;
     if (L <= l && r <= R) {
-      lazy[idx] += delta;
-      v[idx] += delta;
+      update_node(idx, delta);
       return;
     }
     push_down(idx);
@@ -46,12 +51,8 @@ struct SegTree {
   }
   void push_down(int idx) {
     if (!lazy[idx]) return;
-    int lch = lc(idx);
-    int rch = rc(idx);
-    lazy[lch] += lazy[idx];
-    lazy[rch] += lazy[idx];
-    v[lch] += lazy[idx];
-    v[rch] += lazy[idx];
+    update_node(lc(idx), lazy[idx]);
+    update_node(rc(idx), lazy[idx]);
     lazy[idx] = 0;
   }
   void push_up(int idx) {
