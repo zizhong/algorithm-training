@@ -42,9 +42,7 @@ class CompositedBarrier {
       m_cv.notify_all();
       return;
     }
-    if (enough()) {
-      to_pending();
-    }
+    to_pending();
     m_inuse[x]--;
     m_cv.notify_all();
   };
